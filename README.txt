@@ -77,3 +77,9 @@ IF YOU ALREADY DEPLOYED VERSION 1
 Replace the files in your hosted site with this version.
 Then refresh the site twice (or fully close and reopen it) so the updated service worker takes control.
 Your existing checkmarks should remain because the saved-progress key did not change.
+
+
+VERSION 3 DISPLAY UPDATE
+- Scripture verse text is now 18 pt.
+- Every verse appears on its own separate line instead of paragraph form.
+- Cache version bumped to v3 so the visual update replaces older cached files.
