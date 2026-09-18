@@ -83,3 +83,10 @@ VERSION 3 DISPLAY UPDATE
 - Scripture verse text is now 18 pt.
 - Every verse appears on its own separate line instead of paragraph form.
 - Cache version bumped to v3 so the visual update replaces older cached files.
+
+
+VERSION 4 READABILITY UPDATE
+- Each verse is its own block.
+- Added 18px spacing after every verse.
+- Scripture remains 18 pt.
+- Cache bumped to v4.

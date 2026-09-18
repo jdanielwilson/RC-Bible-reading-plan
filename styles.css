@@ -185,8 +185,12 @@ main { padding:18px 14px 50px; }
   line-height:1.6;
   font-family: Georgia,"Times New Roman",serif;
   font-size:18pt;
-  margin:0 0 12px;
+  margin:0 0 18px;
 }
+.verse-list {
+  margin-top:8px;
+}
+
 .verse-num {
   vertical-align:super;
   margin-right:6px;

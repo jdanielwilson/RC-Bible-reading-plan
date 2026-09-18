@@ -173,18 +173,19 @@
         p.textContent = "No verse text was returned for this chapter.";
         section.append(p);
       } else {
-        const p = document.createElement("p");
+        const verseList = document.createElement("div");
+        verseList.className = "verse-list";
         for (let i = 0; i < verses.length; i++) {
           const v = verses[i];
-          const span = document.createElement("span");
-          span.className = "verse";
+          const verse = document.createElement("div");
+          verse.className = "verse";
           const sup = document.createElement("sup");
           sup.className = "verse-num";
           sup.textContent = String(verseNumber(v, i));
-          span.append(sup, document.createTextNode(verseText(v).trim() + " "));
-          p.append(span);
+          verse.append(sup, document.createTextNode(verseText(v).trim()));
+          verseList.append(verse);
         }
-        section.append(p);
+        section.append(verseList);
       }
       els.scriptureText.append(section);
     }
