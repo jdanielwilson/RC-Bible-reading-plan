@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17324d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bible Plan">
+  <title>Restoration Church Bible Reading Plan</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div>
+        <p class="eyebrow">RESTORATION CHURCH</p>
+        <h1>360-Day Bible Reading Plan</h1>
+        <p class="subhead">Start any day of the year. Read one numbered portion each day.</p>
+      </div>
+      <div class="progress-card" aria-live="polite">
+        <span class="progress-label">Progress</span>
+        <strong><span id="completedCount">0</span> / 360</strong>
+        <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="continue-panel" aria-labelledby="continueTitle">
+      <div>
+        <p class="eyebrow">CONTINUE READING</p>
+        <h2 id="continueTitle">Day 1</h2>
+        <p id="continueReading" class="reading-title">Genesis 1–3</p>
+      </div>
+      <button id="continueButton" class="primary-button" type="button">Read today's Scripture</button>
+    </section>
+
+    <section class="install-note">
+      <details>
+        <summary>Put this plan on your phone</summary>
+        <p><strong>iPhone:</strong> open this page in Safari, tap Share, then <em>Add to Home Screen</em>.</p>
+        <p><strong>Android:</strong> open in Chrome, tap the menu, then <em>Install app</em> or <em>Add to Home screen</em>.</p>
+      </details>
+    </section>
+
+    <section class="list-section" aria-labelledby="allDaysHeading">
+      <div class="list-heading">
+        <div>
+          <p class="eyebrow">ALL DAYS</p>
+          <h2 id="allDaysHeading">Reading checklist</h2>
+        </div>
+        <label class="day-jump">
+          <span>Go to day</span>
+          <input id="dayJump" type="number" min="1" max="360" inputmode="numeric" placeholder="1–360">
+        </label>
+      </div>
+      <div id="dayList" class="day-list"></div>
+    </section>
+  </main>
+
+  <dialog id="readerDialog" class="reader-dialog">
+    <div class="reader-shell">
+      <div class="reader-topbar">
+        <div>
+          <p id="readerDayLabel" class="eyebrow"></p>
+          <h2 id="readerTitle"></h2>
+        </div>
+        <button id="closeReader" class="icon-button" type="button" aria-label="Close reading">×</button>
+      </div>
+
+      <div id="readerStatus" class="reader-status" aria-live="polite"></div>
+      <article id="scriptureText" class="scripture"></article>
+
+      <div class="reader-actions">
+        <label class="complete-toggle">
+          <input id="readerComplete" type="checkbox">
+          <span>Mark this day complete</span>
+        </label>
+        <button id="nextDayButton" class="secondary-button" type="button">Next unread day</button>
+      </div>
+    </div>
+  </dialog>
+
+  <noscript>This reading plan requires JavaScript to show the checklist and Bible text.</noscript>
+
+  <script src="plan.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

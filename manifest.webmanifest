@@ -1,0 +1,21 @@
+{
+  "name": "Restoration Church 360-Day Bible Reading Plan",
+  "short_name": "Bible Plan",
+  "description": "A 360-day KJV Bible reading plan from Restoration Church.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f4ee",
+  "theme_color": "#17324d",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
