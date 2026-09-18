@@ -10,7 +10,7 @@
   <title>Restoration Church Bible Reading Plan</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="styles.css?v=4">
+  <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
   <header class="site-header">
@@ -24,6 +24,21 @@
         <span class="progress-label">Progress</span>
         <strong><span id="completedCount">0</span> / 360</strong>
         <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+      </div>
+      <div class="account-card">
+        <div id="signedOutView">
+          <span class="progress-label">Cloud Sync</span>
+          <strong>Guest mode</strong>
+          <button id="openSignIn" class="account-button" type="button">Sign in to sync</button>
+        </div>
+        <div id="signedInView" hidden>
+          <span class="progress-label">Signed in</span>
+          <strong id="accountEmail"></strong>
+          <div class="account-actions">
+            <span id="syncStatus" class="sync-status">Synced</span>
+            <button id="signOutButton" class="account-link" type="button">Sign out</button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -61,6 +76,29 @@
     </section>
   </main>
 
+
+  <dialog id="signInDialog" class="signin-dialog">
+    <form id="signInForm" class="signin-shell">
+      <div class="reader-topbar">
+        <div>
+          <p class="eyebrow">CLOUD SYNC</p>
+          <h2>Sign in to save your progress</h2>
+        </div>
+        <button id="closeSignIn" class="icon-button" type="button" aria-label="Close sign in">×</button>
+      </div>
+      <div class="signin-body">
+        <p>Enter your email. We’ll send you a secure sign-in link. Use the same email on another device to see the same completed days.</p>
+        <label class="email-field">
+          <span>Email address</span>
+          <input id="signInEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+        </label>
+        <button id="sendMagicLink" class="primary-button" type="submit">Email me a sign-in link</button>
+        <p id="signInMessage" class="signin-message" aria-live="polite"></p>
+        <p class="small-note">You can keep using the plan without signing in. Guest progress remains stored on this device.</p>
+      </div>
+    </form>
+  </dialog>
+
   <dialog id="readerDialog" class="reader-dialog">
     <div class="reader-shell">
       <div class="reader-topbar">
@@ -86,7 +124,8 @@
 
   <noscript>This reading plan requires JavaScript to show the checklist and Bible text.</noscript>
 
-  <script src="plan.js?v=4"></script>
-  <script src="app.js?v=4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="plan.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

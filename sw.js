@@ -1,6 +1,6 @@
 
-const CACHE = "restoration-bible-plan-v4";
-const APP_FILES = ["./","./index.html","./styles.css?v=4","./app.js?v=4","./plan.js?v=4","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
+const CACHE = "restoration-bible-plan-v5";
+const APP_FILES = ["./","./index.html","./styles.css?v=5","./app.js?v=5","./plan.js?v=5","./manifest.webmanifest","./icon-192.png","./icon-512.png"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_FILES)));

@@ -245,3 +245,77 @@ main { padding:18px 14px 50px; }
   html { scroll-behavior:auto; }
   .progress-bar { transition:none; }
 }
+
+
+.account-card {
+  min-width:190px;
+  background:rgba(255,255,255,.11);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:14px;
+  padding:13px 15px;
+}
+.account-card strong {
+  display:block;
+  margin:2px 0 8px;
+  font-size:.95rem;
+  word-break:break-word;
+}
+.account-button {
+  width:100%;
+  min-height:40px;
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:9px;
+  background:#fff;
+  color:var(--navy-dark);
+  font-weight:750;
+}
+.account-actions {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.sync-status {
+  font-size:.78rem;
+  color:#d9e3ec;
+}
+.account-link {
+  border:0;
+  background:transparent;
+  color:#fff;
+  text-decoration:underline;
+  font-weight:700;
+  padding:4px 0;
+}
+.signin-dialog {
+  width:min(520px,calc(100% - 18px));
+  border:0;
+  border-radius:16px;
+  padding:0;
+  box-shadow:0 20px 70px rgba(0,0,0,.28);
+}
+.signin-dialog::backdrop { background:rgba(10,20,30,.62); }
+.signin-shell { background:#fff; }
+.signin-body { padding:18px; }
+.signin-body > p { line-height:1.5; }
+.email-field {
+  display:grid;
+  gap:6px;
+  margin:18px 0 14px;
+  font-weight:700;
+}
+.email-field input {
+  width:100%;
+  min-height:48px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:16px;
+}
+.signin-body .primary-button { width:100%; }
+.signin-message { margin:12px 0 0; color:var(--navy); font-weight:650; }
+.small-note { margin:16px 0 0; color:var(--muted); font-size:.86rem; }
+
+@media (max-width:700px) {
+  .account-card { width:100%; }
+}

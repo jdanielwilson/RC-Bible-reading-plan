@@ -90,3 +90,33 @@ VERSION 4 READABILITY UPDATE
 - Added 18px spacing after every verse.
 - Scripture remains 18 pt.
 - Cache bumped to v4.
+
+
+VERSION 5 CLOUD SYNC
+Supabase project: https://efgthnfyurnvkwmfgvku.supabase.co
+GitHub Pages redirect: https://jdanielwilson.github.io/RC-Bible-reading-plan/
+
+Features:
+- Guest mode still saves progress on the current device.
+- Email magic-link sign-in.
+- Signed-in progress syncs across devices.
+- Existing guest progress is merged into the cloud account at first sign-in.
+- Checking a day saves it to Supabase.
+- Unchecking a day removes that completed-day record from Supabase.
+- Existing local-storage key is unchanged.
+
+IMPORTANT SUPABASE AUTH SETUP
+In Supabase:
+Authentication > URL Configuration
+Site URL:
+https://jdanielwilson.github.io/RC-Bible-reading-plan/
+
+Redirect URLs:
+https://jdanielwilson.github.io/RC-Bible-reading-plan/
+
+Also make sure Email authentication is enabled.
+
+SECURITY
+Only the publishable browser key is included in this app.
+Never place a service_role or secret key in GitHub.
+Row Level Security must remain enabled on reading_progress.

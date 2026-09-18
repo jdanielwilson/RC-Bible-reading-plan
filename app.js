@@ -4,6 +4,12 @@
   const plan = window.RESTORATION_PLAN || [];
   const progressKey = "restorationBiblePlanProgressV1";
   const apiBase = "https://cdn.jsdelivr.net/gh/jsubroto/bible-api/versions/kjv/books";
+  const supabaseUrl = "https://efgthnfyurnvkwmfgvku.supabase.co";
+  const supabaseKey = "sb_publishable_JKdzo5sH9jW2Yuje5eVIxw_IwRBpVpA";
+  const siteUrl = "https://jdanielwilson.github.io/RC-Bible-reading-plan/";
+  const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+  let currentUser = null;
+  let cloudReady = false;
   let currentDay = 1;
 
   const els = {
@@ -21,7 +27,18 @@
     scriptureText: document.getElementById("scriptureText"),
     readerComplete: document.getElementById("readerComplete"),
     closeReader: document.getElementById("closeReader"),
-    nextDayButton: document.getElementById("nextDayButton")
+    nextDayButton: document.getElementById("nextDayButton"),
+    signedOutView: document.getElementById("signedOutView"),
+    signedInView: document.getElementById("signedInView"),
+    accountEmail: document.getElementById("accountEmail"),
+    syncStatus: document.getElementById("syncStatus"),
+    openSignIn: document.getElementById("openSignIn"),
+    signOutButton: document.getElementById("signOutButton"),
+    signInDialog: document.getElementById("signInDialog"),
+    signInForm: document.getElementById("signInForm"),
+    signInEmail: document.getElementById("signInEmail"),
+    signInMessage: document.getElementById("signInMessage"),
+    closeSignIn: document.getElementById("closeSignIn")
   };
 
   function loadProgress() {
@@ -43,7 +60,7 @@
     return progress[String(day)] === true;
   }
 
-  function setComplete(day, value) {
+  async function setComplete(day, value) {
     progress[String(day)] = !!value;
     saveProgress();
     const row = document.getElementById(`day-row-${day}`);
@@ -53,6 +70,136 @@
       if (cb) cb.checked = !!value;
     }
     updateSummary();
+
+    if (currentUser && cloudReady) {
+      try {
+        setSyncStatus("Saving…");
+        if (value) {
+          const { error } = await supabaseClient
+            .from("reading_progress")
+            .upsert({
+              user_id: currentUser.id,
+              day_number: day,
+              completed: true,
+              updated_at: new Date().toISOString()
+            }, { onConflict: "user_id,day_number" });
+          if (error) throw error;
+        } else {
+          const { error } = await supabaseClient
+            .from("reading_progress")
+            .delete()
+            .eq("user_id", currentUser.id)
+            .eq("day_number", day);
+          if (error) throw error;
+        }
+        setSyncStatus("Synced");
+      } catch (err) {
+        console.error(err);
+        setSyncStatus("Sync error");
+      }
+    }
+  }
+
+
+  function setSyncStatus(text) {
+    if (els.syncStatus) els.syncStatus.textContent = text;
+  }
+
+  function setAccountUI(user) {
+    currentUser = user || null;
+    if (currentUser) {
+      els.signedOutView.hidden = true;
+      els.signedInView.hidden = false;
+      els.accountEmail.textContent = currentUser.email || "Signed in";
+    } else {
+      els.signedOutView.hidden = false;
+      els.signedInView.hidden = true;
+      els.accountEmail.textContent = "";
+      cloudReady = false;
+    }
+  }
+
+  async function mergeLocalProgressToCloud(user) {
+    setSyncStatus("Syncing…");
+
+    const { data: rows, error } = await supabaseClient
+      .from("reading_progress")
+      .select("day_number, completed")
+      .eq("user_id", user.id);
+
+    if (error) throw error;
+
+    // Union cloud-completed days with locally completed days.
+    const completedDays = new Set();
+    for (const row of rows || []) {
+      if (row.completed) completedDays.add(Number(row.day_number));
+    }
+    for (const d of plan) {
+      if (progress[String(d.day)] === true) completedDays.add(d.day);
+    }
+
+    // Upload local/union progress in one batch.
+    const payload = Array.from(completedDays).map(day => ({
+      user_id: user.id,
+      day_number: day,
+      completed: true,
+      updated_at: new Date().toISOString()
+    }));
+
+    if (payload.length) {
+      const { error: upsertError } = await supabaseClient
+        .from("reading_progress")
+        .upsert(payload, { onConflict: "user_id,day_number" });
+      if (upsertError) throw upsertError;
+    }
+
+    // Mirror merged cloud state locally.
+    progress = {};
+    for (const day of completedDays) progress[String(day)] = true;
+    saveProgress();
+    refreshAllRows();
+    cloudReady = true;
+    setSyncStatus("Synced");
+  }
+
+  function refreshAllRows() {
+    for (const d of plan) {
+      const row = document.getElementById(`day-row-${d.day}`);
+      if (!row) continue;
+      const checked = isComplete(d.day);
+      row.classList.toggle("complete", checked);
+      const cb = row.querySelector("input[type=checkbox]");
+      if (cb) cb.checked = checked;
+    }
+    updateSummary();
+    if (els.readerComplete && currentDay) {
+      els.readerComplete.checked = isComplete(currentDay);
+    }
+  }
+
+  async function initializeAuth() {
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      setAccountUI(session?.user || null);
+      if (session?.user) {
+        await mergeLocalProgressToCloud(session.user);
+      }
+    } catch (err) {
+      console.error(err);
+      setSyncStatus("Sync unavailable");
+    }
+
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+      setAccountUI(session?.user || null);
+      if (session?.user && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+        try {
+          await mergeLocalProgressToCloud(session.user);
+        } catch (err) {
+          console.error(err);
+          setSyncStatus("Sync error");
+        }
+      }
+    });
   }
 
   function nextUnread(start = 1) {
@@ -244,8 +391,49 @@
     if (outside) els.dialog.close();
   });
 
+
+  els.openSignIn.addEventListener("click", () => {
+    els.signInMessage.textContent = "";
+    els.signInDialog.showModal();
+    setTimeout(() => els.signInEmail.focus(), 50);
+  });
+
+  els.closeSignIn.addEventListener("click", () => els.signInDialog.close());
+
+  els.signInForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = els.signInEmail.value.trim();
+    if (!email) return;
+    els.signInMessage.textContent = "Sending sign-in link…";
+    try {
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: siteUrl }
+      });
+      if (error) throw error;
+      els.signInMessage.textContent = "Check your email and tap the sign-in link. Then return here.";
+    } catch (err) {
+      console.error(err);
+      els.signInMessage.textContent = err.message || "Could not send the sign-in link.";
+    }
+  });
+
+  els.signOutButton.addEventListener("click", async () => {
+    setSyncStatus("Signing out…");
+    await supabaseClient.auth.signOut();
+    setAccountUI(null);
+    updateSummary();
+  });
+
+  els.signInDialog.addEventListener("click", (e) => {
+    const rect = els.signInDialog.getBoundingClientRect();
+    const outside = e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
+    if (outside) els.signInDialog.close();
+  });
+
   buildList();
   updateSummary();
+  initializeAuth();
 
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
