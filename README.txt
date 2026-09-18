@@ -65,3 +65,15 @@ manifest.webmanifest   Makes the site installable as a PWA
 sw.js                  Offline/cache support
 icon-192.png           App icon
 icon-512.png           App icon
+
+
+VERSION 2 FIX
+- Fixed Scripture rendering so the actual KJV verse text appears, not just verse numbers.
+- Uses the documented jsubroto KJV chapter JSON source with verses[].text.
+- Keeps the same browser storage key, so existing checkmarks/progress are preserved.
+- Service-worker cache bumped to v2.
+
+IF YOU ALREADY DEPLOYED VERSION 1
+Replace the files in your hosted site with this version.
+Then refresh the site twice (or fully close and reopen it) so the updated service worker takes control.
+Your existing checkmarks should remain because the saved-progress key did not change.

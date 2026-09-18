@@ -3,7 +3,7 @@
   "use strict";
   const plan = window.RESTORATION_PLAN || [];
   const progressKey = "restorationBiblePlanProgressV1";
-  const apiBase = "https://api.midvash.com/v1/kjv";
+  const apiBase = "https://cdn.jsdelivr.net/gh/jsubroto/bible-api/versions/kjv/books";
   let currentDay = 1;
 
   const els = {
@@ -123,33 +123,29 @@
     els.dayList.append(frag);
   }
 
-  function normalizeApiData(json) {
-    const data = json && json.data ? json.data : json;
-    if (!data) return null;
-    if (Array.isArray(data.verses)) return data;
-    if (data.chapter && Array.isArray(data.chapter.verses)) return data.chapter;
-    return data;
-  }
-
   async function fetchRef(ref) {
-    let url;
-    if (ref.verse_start != null) {
-      url = `${apiBase}/${encodeURIComponent(ref.slug)}/${ref.chapter}/${ref.verse_start}-${ref.verse_end}`;
-    } else {
-      url = `${apiBase}/${encodeURIComponent(ref.slug)}/${ref.chapter}`;
-    }
+    const url = `${apiBase}/${encodeURIComponent(ref.slug)}/chapters/${ref.chapter}.json`;
     const res = await fetch(url, { headers: { "Accept":"application/json" } });
     if (!res.ok) throw new Error(`Unable to load ${ref.book} ${ref.chapter}.`);
-    const json = await res.json();
-    const data = normalizeApiData(json);
-    if (!data) throw new Error(`Unexpected Bible data for ${ref.book} ${ref.chapter}.`);
+    const data = await res.json();
+
+    if (!data || !Array.isArray(data.verses)) {
+      throw new Error(`Unexpected Bible data for ${ref.book} ${ref.chapter}.`);
+    }
+
+    // Psalm 119 is the only partial-chapter reading in this plan.
+    if (ref.verse_start != null) {
+      data.verses = data.verses.filter((v, index) => {
+        const n = Number(v.number ?? v.verse ?? v.verseNumber ?? (index + 1));
+        return n >= ref.verse_start && n <= ref.verse_end;
+      });
+    }
+
     return { ref, data };
   }
 
   function extractVerses(data) {
-    if (Array.isArray(data.verses)) return data.verses;
-    if (Array.isArray(data)) return data;
-    return [];
+    return Array.isArray(data?.verses) ? data.verses : [];
   }
 
   function verseNumber(v, fallbackIndex) {
